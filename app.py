@@ -24,7 +24,6 @@ tabaquismo = st.radio("¿Fuma actualmente?", ["Sí", "No"])
 diabetes = st.radio("¿Tiene diabetes?", ["Sí", "No"])
 
 # Botón de predicción
-nombre_paciente = st.text_input("Nombre del paciente", value="")
 if st.button("Calcular Riesgo"):
 
     # Convertir entradas a formato esperado por el modelo
