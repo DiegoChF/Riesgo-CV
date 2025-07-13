@@ -125,5 +125,5 @@ with open(pdf_path, "rb") as pdf_file:
         label="📄 Descargar Resultado en PDF",
         data=pdf_file,
         file_name=f"Riesgo_{nombre_paciente.replace(' ', '_')}.pdf",
-        mime="application/pdf"
+        mime="application/pdf",
         st.download_button("📄 Descargar Resultado en PDF", f, file_name=f"{nombre_paciente}_riesgo.pdf"))
