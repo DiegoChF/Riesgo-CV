@@ -131,4 +131,4 @@ with open(pdf_path, "rb") as pdf_file:
             data=f,
             file_name=f"{nombre_paciente}_riesgo.pdf",
             mime="application/pdf"
-        )
+        ))
