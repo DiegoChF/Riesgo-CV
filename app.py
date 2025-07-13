@@ -9,16 +9,16 @@ le = joblib.load('label_encoder.pkl')
 
 # Título
 st.title("Predicción de Riesgo Cardiovascular")
-st.markdown("Aprende del riesgo sin depender del score de Framingham tradicional.")
+st.markdown("Calcular el Riesgo Cardiovascular a 10 años")
 
 # Formulario
 st.subheader("Introduce los datos del paciente:")
 
 edad = st.number_input("Edad", min_value=20, max_value=100, step=1)
 sexo = st.radio("Sexo", ["Masculino", "Femenino"])
-pas = st.number_input("Presión Arterial Sistólica (mmHg)", min_value=80, max_value=250, step=1)
-col_total = st.number_input("Colesterol Total (mg/dL)", min_value=100, max_value=400, step=1)
-hdl = st.number_input("Colesterol HDL (mg/dL)", min_value=20, max_value=100, step=1)
+pas = st.number_input("Presión Arterial Sistólica (mmHg)", min_value=40, max_value=250, step=1)
+col_total = st.number_input("Colesterol Total (mg/dL)", min_value=60, max_value=400, step=1)
+hdl = st.number_input("Colesterol HDL (mg/dL)", min_value=20, max_value=150, step=1)
 tabaquismo = st.radio("¿Fuma actualmente?", ["Sí", "No"])
 diabetes = st.radio("¿Tiene diabetes?", ["Sí", "No"])
 
