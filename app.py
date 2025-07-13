@@ -74,24 +74,4 @@ if st.button("Calcular Riesgo"):
                           "Los resultados deben ser interpretados por profesionales de salud.")
     
             st.markdown("---")
-            st.markdown(disclaimer)
-    
-            # === GENERAR PDF ===
-            html_content = f"""
-            <h2>Resultado de Evaluación Cardiovascular</h2>
-            <p><strong>Nombre del paciente:</strong> {nombre_paciente}</p>
-            <p><strong>Riesgo predicho:</strong> {pred}</p>
-            <p><strong>Recomendación:</strong> {recomendacion}</p>
-            <hr>
-            <p style='font-size:12px'>{disclaimer}</p>
-            """
-    
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".html") as tmp_html:
-                tmp_html.write(html_content.encode("utf-8"))
-                tmp_html.flush()
-                pdf_path = tmp_html.name.replace(".html", ".pdf")
-                pdfkit.from_file(tmp_html.name, pdf_path)
-    
-            with open(pdf_path, "rb") as f:
-                st.download_button("📄 Descargar Resultado en PDF", f, file_name=f"{nombre_paciente}_riesgo.pdf")
-    
+            st.markdown(disclaimer)    
