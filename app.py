@@ -1,62 +1,59 @@
 import streamlit as st
 import pandas as pd
-import joblib
 import numpy as np
+import joblib
 
-# Load the trained model, label encoder, and features
-try:
-    model = joblib.load('modelo_rf.pkl')
-    le = joblib.load('label_encoder.pkl')
-    features = joblib.load('features.pkl')
-except FileNotFoundError:
-    st.error("Model files not found. Please upload 'modelo_rf.pkl', 'label_encoder.pkl', and 'features.pkl'.")
-    st.stop()
+# Cargar modelo y codificador
+modelo = joblib.load('modelo_rf.pkl')
+le = joblib.load('label_encoder.pkl')
 
+# Título
 st.title("Predicción de Riesgo Cardiovascular")
+st.markdown("Aprende del riesgo sin depender del score de Framingham tradicional.")
 
-st.write("""
-Esta aplicación predice el riesgo cardiovascular (Alto, Bajo, Moderado) basado en los factores de riesgo ingresados.
-""")
+# Formulario
+st.subheader("Introduce los datos del paciente:")
 
-# Input fields
-edad = st.slider("Edad", 18, 100, 50)
-sexo = st.selectbox("Sexo", options=["Masculino", "Femenino"])
-pas = st.slider("Presión Arterial Sistólica (PAS)", 80, 200, 120)
-colesterol_total = st.slider("Colesterol Total", 100, 400, 200)
-hdl = st.slider("HDL", 20, 100, 50)
-tabaquismo = st.selectbox("Tabaquismo", options=["No", "Sí"])
-diabetes = st.selectbox("Diabetes", options=["No", "Sí"])
+edad = st.number_input("Edad", min_value=20, max_value=100, step=1)
+sexo = st.radio("Sexo", ["Masculino", "Femenino"])
+pas = st.number_input("Presión Arterial Sistólica (mmHg)", min_value=80, max_value=250, step=1)
+col_total = st.number_input("Colesterol Total (mg/dL)", min_value=100, max_value=400, step=1)
+hdl = st.number_input("Colesterol HDL (mg/dL)", min_value=20, max_value=100, step=1)
+tabaquismo = st.radio("¿Fuma actualmente?", ["Sí", "No"])
+diabetes = st.radio("¿Tiene diabetes?", ["Sí", "No"])
 
-# Map input to model features
-sexo_encoded = 1 if sexo == "Masculino" else 0
-tabaquismo_encoded = 1 if tabaquismo == "Sí" else 0
-diabetes_encoded = 1 if diabetes == "Sí" else 0
+# Botón de predicción
+if st.button("Calcular Riesgo"):
 
-# Create a DataFrame for prediction
-input_data = pd.DataFrame([[edad, sexo_encoded, pas, colesterol_total, hdl, tabaquismo_encoded, diabetes_encoded]],
-                          columns=features)
+    # Convertir entradas a formato esperado por el modelo
+    entrada = pd.DataFrame([[
+        edad,
+        1 if sexo == "Masculino" else 0,
+        pas,
+        col_total,
+        hdl,
+        1 if tabaquismo == "Sí" else 0,
+        1 if diabetes == "Sí" else 0
+    ]], columns=[
+        'Edad', 'Sexo', 'PAS', 'Colesterol_total', 'HDL', 'Tabaquismo', 'Diabetes'
+    ])
 
+    # Probabilidad de clase "Alto"
+    idx_alto = list(le.classes_).index('Alto')
+    prob_alto = modelo.predict_proba(entrada)[0][idx_alto]
 
-# Make prediction
-if st.button("Predecir Riesgo"):
-    # Ensure input data has the same columns and order as the training data
-    input_data = input_data[features]
+    # Threshold definido durante entrenamiento
+    threshold = 0.15
 
-    probs = model.predict_proba(input_data)[0]
-    predicted_class_index = np.argmax(probs)
-    predicted_risk = le.classes_[predicted_class_index]
+    if prob_alto >= threshold:
+        pred = 'Alto'
+    else:
+        # Comparar entre Bajo y Moderado
+        probs = modelo.predict_proba(entrada)[0]
+        idx_bajo = list(le.classes_).index('Bajo')
+        idx_mod = list(le.classes_).index('Moderado')
+        pred = 'Bajo' if probs[idx_bajo] > probs[idx_mod] else 'Moderado'
 
-    st.subheader("Resultado de la Predicción:")
-
-    # Apply threshold logic from the notebook (optional, based on user preference)
-    # For simplicity, we'll use the standard predict for this Streamlit app
-    # If the user wants the threshold logic, it can be added here.
-
-    st.write(f"El riesgo cardiovascular predicho es: **{predicted_risk}**")
-
-    st.subheader("Probabilidades por Categoría:")
-    probs_df = pd.DataFrame([probs], columns=le.classes_)
-    st.dataframe(probs_df)
-
-# Add information about the threshold if desired
-# st.info(f"The model uses a threshold of {th} for the 'Alto' class.")
+    # Mostrar resultado
+    st.subheader("Resultado del Riesgo Predicho:")
+    st.markdown(f"<h2 style='color:purple'>{pred}</h2>", unsafe_allow_html=True)
