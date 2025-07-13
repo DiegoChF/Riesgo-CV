@@ -1,0 +1,2 @@
+pip install pdfkit
+sudo apt-get install wkhtmltopdf  # o instalarlo en tu entorno local según sistema operativo
