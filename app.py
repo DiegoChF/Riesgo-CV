@@ -59,10 +59,10 @@ if st.button("Calcular Riesgo"):
     st.markdown(f"<h2 style='color:purple'>{pred}</h2>", unsafe_allow_html=True)
 
     # Mensajes según riesgo
-            if pred == 'Alto':
+            if pred = 'Alto':
                 recomendacion = "⚠️ Riesgo alto. Se recomienda evaluación con cardiología en el corto plazo."
                 st.warning(recomendacion)
-            elif pred == 'Moderado':
+            elif pred = 'Moderado':
                 recomendacion = "ℹ️ Riesgo moderado. Sugiere evaluación médica en el mediano plazo."
                 st.info(recomendacion)
             else:
