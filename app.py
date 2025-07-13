@@ -57,3 +57,15 @@ if st.button("Calcular Riesgo"):
     # Mostrar resultado
     st.subheader("Resultado del Riesgo Predicho:")
     st.markdown(f"<h2 style='color:purple'>{pred}</h2>", unsafe_allow_html=True)
+
+# Mensaje de advertencia según el resultado
+    if riesgo_predicho == 'Alto':
+        st.warning("⚠️ Este resultado sugiere un riesgo alto. Se recomienda una evaluación médica especializada en el corto plazo, idealmente con un cardiólogo.")
+    elif riesgo_predicho == 'Moderado':
+        st.info("ℹ️ Este resultado sugiere un riesgo moderado. Se aconseja acudir a una consulta médica para seguimiento en el mediano plazo.")
+    else:  # Bajo
+        st.success("✅ Este resultado sugiere un riesgo bajo. Aún así, se recomienda mantener controles médicos regulares, al menos una vez al año.")
+
+    # Descargo de responsabilidad
+    st.markdown("---")
+    st.markdown("📝 **Importante:** Esta herramienta no reemplaza una evaluación médica completa. Los resultados deben ser interpretados por profesionales de la salud y no constituyen un diagnóstico definitivo.")
