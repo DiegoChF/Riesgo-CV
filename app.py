@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 import joblib
 import tempfile
-from xhtml2pdf import pisa
 
 # Cargar modelo y codificador
 modelo = joblib.load('modelo_rf.pkl')
