@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import joblib
+import tempfile
+from xhtml2pdf import pisa
 
 # Cargar modelo y codificador
 modelo = joblib.load('modelo_rf.pkl')
@@ -77,21 +79,51 @@ if st.button("Calcular Riesgo"):
     st.markdown("---")
     st.markdown(disclaimer)
     
-    # === GENERAR PDF ===
-    html_content = f"""
-    <h2>Resultado de Evaluación Cardiovascular</h2>
-    <p><strong>Nombre del paciente:</strong> {nombre_paciente}</p>
-    <p><strong>Riesgo predicho:</strong> {pred}</p>
-    <p><strong>Recomendación:</strong> {recomendacion}</p>
-    <hr>
-    <p style='font-size:12px'>{disclaimer}</p>
-    """
-    
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".html") as tmp_html:
-        tmp_html.write(html_content.encode("utf-8"))
-        tmp_html.flush()
-        pdf_path = tmp_html.name.replace(".html", ".pdf")
-        pdfkit.from_file(tmp_html.name, pdf_path)
-    
-    with open(pdf_path, "rb") as f:
+    # === Generar PDF ===
+import tempfile
+from xhtml2pdf import pisa
+
+# Crear HTML para PDF
+html_content = f"""
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {{ font-family: Arial, sans-serif; }}
+    h2 {{ color: purple; }}
+  </style>
+</head>
+<body>
+  <h1>Resultado de Riesgo Cardiovascular</h1>
+  <p><strong>Nombre del paciente:</strong> {nombre_paciente}</p>
+  <p><strong>Edad:</strong> {edad} años</p>
+  <p><strong>Sexo:</strong> {sexo}</p>
+  <p><strong>PAS:</strong> {pas} mmHg</p>
+  <p><strong>Colesterol total:</strong> {col_total} mg/dL</p>
+  <p><strong>HDL:</strong> {hdl} mg/dL</p>
+  <p><strong>Tabaquismo:</strong> {tabaquismo}</p>
+  <p><strong>Diabetes:</strong> {diabetes}</p>
+  <h2>Riesgo Predicho: {pred}</h2>
+  <p>{recomendacion}</p>
+</body>
+</html>
+"""
+
+# Guardar HTML temporal
+with tempfile.NamedTemporaryFile(delete=False, suffix=".html") as tmp_html:
+    tmp_html.write(html_content.encode('utf-8'))
+    html_path = tmp_html.name
+
+# Crear archivo PDF temporal
+pdf_path = html_path.replace('.html', '.pdf')
+with open(html_path, "r") as html_file, open(pdf_path, "wb") as pdf_file:
+    pisa.CreatePDF(html_file.read(), dest=pdf_file)
+
+# Mostrar botón de descarga
+with open(pdf_path, "rb") as pdf_file:
+    st.download_button(
+        label="📄 Descargar Resultado en PDF",
+        data=pdf_file,
+        file_name=f"Riesgo_{nombre_paciente.replace(' ', '_')}.pdf",
+        mime="application/pdf"
         st.download_button("📄 Descargar Resultado en PDF", f, file_name=f"{nombre_paciente}_riesgo.pdf")
